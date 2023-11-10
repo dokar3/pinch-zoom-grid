@@ -4,14 +4,16 @@
 <img alt="GitHub Workflow Status (with event)" src="https://img.shields.io/github/actions/workflow/status/dokar3/pinch-zoom-grid/android.yaml?style=flat-square">
 </div>
 
-A wrapper for `LazyVerticalGrid()` and `LazyHorizontalGrid()` to animate between multiple grid
-cells.
+<br />
+
+A wrapper for `LazyVerticalGrid()` and `LazyHorizontalGrid()` to switch between multiple grid
+cells using pinch gestures and animations.
 
 ### Demo
 
 | Vertical                                                     | Horizontal                                                   | Invoke                                                       |
 | ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ |
-| <video src="https://github.com/dokar3/pinch-zoom-grid/assets/68095777/c2986093-0631-4ddf-8ded-de073dfe59f6"/> | <video src="https://github.com/dokar3/pinch-zoom-grid/assets/68095777/0f8b087a-a83e-4b96-a0cc-2a93b6bc81a3"/> | <video src="https://github.com/dokar3/pinch-zoom-grid/assets/68095777/018bb468-6b16-43f7-8caa-d2a1bea28fd9"/> |
+| <video src="https://github.com/dokar3/pinch-zoom-grid/assets/68095777/fd7a2ed1-96d5-44e1-aa85-0ca47a87d04a"/> | <video src="https://github.com/dokar3/pinch-zoom-grid/assets/68095777/561b49f9-bdf9-4649-92cc-f9694c626d90"/> | <video src="https://github.com/dokar3/pinch-zoom-grid/assets/68095777/95816c47-4e34-4172-9f61-9e829813b340"/> |
 
 
 # Usages
