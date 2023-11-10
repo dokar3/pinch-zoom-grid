@@ -103,7 +103,7 @@ fun PinchZoomGridDemo(modifier: Modifier = Modifier) {
 
     val state = rememberPinchZoomLazyGridState(
         cellsList = cellsList,
-        defaultCellsIndex = 1,
+        initialCellsIndex = 1,
     )
 
     Box(modifier = modifier) {

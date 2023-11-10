@@ -36,7 +36,7 @@ val cellsList = remember {
 }
 val state = rememberPinchZoomLazyGridState(
     cellsList = cellsList,
-    defaultCellsIndex = 1,
+    initialCellsIndex = 1,
 )
 
 PinchZoomGridLayout(state = state) { // PinchZoomLazyGridScope
