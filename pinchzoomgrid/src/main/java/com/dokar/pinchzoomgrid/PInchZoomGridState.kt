@@ -33,17 +33,17 @@ import kotlinx.coroutines.launch
 @Composable
 fun rememberPinchZoomLazyGridState(
     cellsList: List<GridCells>,
-    defaultCellsIndex: Int,
+    initialCellsIndex: Int,
     gridState: LazyGridState = rememberLazyGridState(),
     animationSpec: AnimationSpec<Float> = defaultSpringSpec,
 ): PinchZoomLazyGridState {
     val coroutineScope = rememberCoroutineScope()
-    return remember(coroutineScope, cellsList, defaultCellsIndex, gridState) {
+    return remember(coroutineScope, cellsList, initialCellsIndex, gridState) {
         PinchZoomLazyGridState(
             coroutineScope,
             gridState,
             cellsList,
-            defaultCellsIndex,
+            initialCellsIndex,
             animationSpec,
         )
     }.also {
@@ -59,13 +59,13 @@ class PinchZoomLazyGridState(
     private val coroutineScope: CoroutineScope,
     internal val gridState: LazyGridState,
     private val cellsList: List<GridCells>,
-    defaultCellsIndex: Int,
+    initialCellsIndex: Int,
     internal var animationSpec: AnimationSpec<Float>,
 ) {
     /**
      * The current grid cells.
      */
-    var currentCells by mutableStateOf(cellsList[defaultCellsIndex])
+    var currentCells by mutableStateOf(cellsList[initialCellsIndex])
         private set
 
     internal var nextCells by mutableStateOf<GridCells?>(null)
