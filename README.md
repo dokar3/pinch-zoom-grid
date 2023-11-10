@@ -3,6 +3,13 @@
 A wrapper for `LazyVerticalGrid()` and `LazyHorizontalGrid()` to animate between multiple grid
 cells.
 
+### Demo
+
+| Vertical                                                     | Horizontal                                                   | Invoke                                                       |
+| ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ |
+| https://github.com/dokar3/pinch-zoom-grid/assets/68095777/c2986093-0631-4ddf-8ded-de073dfe59f6 | https://github.com/dokar3/pinch-zoom-grid/assets/68095777/0f8b087a-a83e-4b96-a0cc-2a93b6bc81a3 | https://github.com/dokar3/pinch-zoom-grid/assets/68095777/018bb468-6b16-43f7-8caa-d2a1bea28fd9 |
+
+
 # Usages
 
 ### Basic
