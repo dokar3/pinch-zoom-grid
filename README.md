@@ -1,4 +1,8 @@
-# Pinch Zoom Grid
+<div align="center">
+<h1>Pinch Zoom Grid</h1>
+<img alt="Maven Central" src="https://img.shields.io/maven-central/v/io.github.dokar3/pinchzoomgrid?style=flat-square&color=%232DBEC0">
+<img alt="GitHub Workflow Status (with event)" src="https://img.shields.io/github/actions/workflow/status/dokar3/pinch-zoom-grid/android.yaml?style=flat-square">
+</div>
 
 A wrapper for `LazyVerticalGrid()` and `LazyHorizontalGrid()` to animate between multiple grid
 cells.
@@ -11,6 +15,12 @@ cells.
 
 
 # Usages
+
+### Dependency
+
+```kotlin
+implementation("io.github.dokar3:pinchzoomgrid:LATEST_VERSION")
+```
 
 ### Basic
 
