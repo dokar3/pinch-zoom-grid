@@ -229,6 +229,18 @@ class PinchZoomLazyGridState(
             )
         }
         coroutineScope.launch {
+            // After the zoom type is changed, the next grid needs to sync the scroll position,
+            // and item bounds need to re-calculate
+            val scrollPosition = gridScrollPosition
+            val nextGridState = nextGridState
+            if (scrollPosition != null && nextGridState != null) {
+                nextGridState.scrollToItem(
+                    index = scrollPosition.firstVisibleItem,
+                    scrollOffset = scrollPosition.firstItemScrollOffset,
+                )
+                nextItemsBounds.clear()
+            }
+
             awaitFrame() // Until the next grid gets composed
             // Reset the zoom after the next grid is ready
             zoom = 1f
