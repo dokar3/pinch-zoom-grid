@@ -23,7 +23,7 @@ import androidx.compose.ui.Modifier
  */
 @Composable
 fun PinchZoomGridLayout(
-    state: PinchZoomLazyGridState,
+    state: PinchZoomGridState,
     modifier: Modifier = Modifier,
     content: @Composable PinchZoomLazyGridScope.() -> Unit,
 ) {

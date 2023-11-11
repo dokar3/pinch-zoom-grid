@@ -13,7 +13,7 @@ import androidx.compose.ui.util.fastAny
 import androidx.compose.ui.util.fastForEach
 import kotlin.math.abs
 
-internal fun Modifier.handlePinchGesture(state: PinchZoomLazyGridState): Modifier {
+internal fun Modifier.handlePinchGesture(state: PinchZoomGridState): Modifier {
     return this.pointerInput(state) {
         // Based on detectTransformGestures()
         awaitEachGesture {
@@ -65,7 +65,7 @@ internal fun Modifier.handlePinchGesture(state: PinchZoomLazyGridState): Modifie
     }
 }
 
-internal fun Modifier.handleOverZooming(state: PinchZoomLazyGridState): Modifier {
+internal fun Modifier.handleOverZooming(state: PinchZoomGridState): Modifier {
     return this.graphicsLayer {
         val isOverZooming = state.isZooming && state.nextCells == null
         if (!isOverZooming) return@graphicsLayer

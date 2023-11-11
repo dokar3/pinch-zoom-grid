@@ -60,7 +60,7 @@ import com.dokar.pinchzoomgrid.PinchItemTransitions
 import com.dokar.pinchzoomgrid.PinchZoomGridLayout
 import com.dokar.pinchzoomgrid.PinchZoomLazyGridScope
 import com.dokar.pinchzoomgrid.demo.ui.theme.ComposeSampleTheme
-import com.dokar.pinchzoomgrid.rememberPinchZoomLazyGridState
+import com.dokar.pinchzoomgrid.rememberPinchZoomGridState
 import kotlin.random.Random
 
 class MainActivity : ComponentActivity() {
@@ -101,7 +101,7 @@ fun PinchZoomGridDemo(modifier: Modifier = Modifier) {
         )
     }
 
-    val state = rememberPinchZoomLazyGridState(
+    val state = rememberPinchZoomGridState(
         cellsList = cellsList,
         initialCellsIndex = 1,
     )

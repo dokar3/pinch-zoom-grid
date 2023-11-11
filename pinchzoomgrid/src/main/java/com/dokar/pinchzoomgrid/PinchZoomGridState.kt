@@ -28,18 +28,18 @@ import kotlinx.coroutines.job
 import kotlinx.coroutines.launch
 
 /**
- * Create and remember a [PinchZoomLazyGridState].
+ * Create and remember a [PinchZoomGridState].
  */
 @Composable
-fun rememberPinchZoomLazyGridState(
+fun rememberPinchZoomGridState(
     cellsList: List<GridCells>,
     initialCellsIndex: Int,
     gridState: LazyGridState = rememberLazyGridState(),
     animationSpec: AnimationSpec<Float> = defaultSpringSpec,
-): PinchZoomLazyGridState {
+): PinchZoomGridState {
     val coroutineScope = rememberCoroutineScope()
     return remember(coroutineScope, cellsList, initialCellsIndex, gridState) {
-        PinchZoomLazyGridState(
+        PinchZoomGridState(
             coroutineScope,
             gridState,
             cellsList,
@@ -55,7 +55,7 @@ fun rememberPinchZoomLazyGridState(
  * The state used by [PinchZoomGridLayout].
  */
 @Stable
-class PinchZoomLazyGridState(
+class PinchZoomGridState(
     private val coroutineScope: CoroutineScope,
     internal val gridState: LazyGridState,
     private val cellsList: List<GridCells>,

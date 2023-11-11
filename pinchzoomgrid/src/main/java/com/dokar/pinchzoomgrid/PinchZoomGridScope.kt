@@ -43,7 +43,7 @@ interface PinchZoomLazyGridScope {
 }
 
 internal class CurrPinchZoomLazyGridScope(
-    private val state: PinchZoomLazyGridState,
+    private val state: PinchZoomGridState,
     override val gridState: LazyGridState,
 ) : PinchZoomLazyGridScope {
     override val gridCells: GridCells get() = state.currentCells
@@ -107,7 +107,7 @@ internal class CurrPinchZoomLazyGridScope(
 }
 
 internal class NextPinchZoomLazyGridScope(
-    private val state: PinchZoomLazyGridState,
+    private val state: PinchZoomGridState,
     override val gridState: LazyGridState,
     override val gridCells: GridCells,
 ) : PinchZoomLazyGridScope {
