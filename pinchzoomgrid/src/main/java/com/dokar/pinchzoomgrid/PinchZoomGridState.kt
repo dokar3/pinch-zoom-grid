@@ -85,6 +85,8 @@ class PinchZoomGridState(
     internal var zoomType = ZoomType.ZoomIn
         private set
 
+    private var zoomCentroid: Offset? = null
+
     // Animation value
     internal val progress
         get() = if (zoom < 1f) {
@@ -103,11 +105,9 @@ class PinchZoomGridState(
     internal var isNextItemsBoundsReady = false
         private set
 
-    /**
-     * When true, the next grid will be completely drawn, and the current grid will be hidden.
-     * Should be false until the scroll position is synced.
-     */
-    internal var isSwappingGrids by mutableStateOf(false)
+    internal var isCurrItemsVisible by mutableStateOf(true)
+        private set
+    internal var forceShowNextItems by mutableStateOf(false)
         private set
 
     internal val animatingKeys = mutableSetOf<Any>()
@@ -118,7 +118,8 @@ class PinchZoomGridState(
     internal fun onZoomStart(centroid: Offset, startZoom: Float) {
         animationJob?.cancel()
         isZooming = true
-        collectZoomItems(centroid)
+        zoomCentroid = centroid
+        syncScrollPosition()
         updateZoomTypeAndNextCells(startZoom)
     }
 
@@ -127,12 +128,12 @@ class PinchZoomGridState(
         if (newZoom < 1f) {
             if (zoomType != ZoomType.ZoomOut) {
                 updateZoomTypeAndNextCells(newZoom)
-                collectZoomItems(centroid = null)
+                syncScrollPosition()
             }
         } else {
             if (zoomType != ZoomType.ZoomIn) {
                 updateZoomTypeAndNextCells(newZoom)
-                collectZoomItems(centroid = null)
+                syncScrollPosition()
             }
         }
         this.zoom = newZoom
@@ -184,7 +185,7 @@ class PinchZoomGridState(
         zoomType = if (isZoomIn) ZoomType.ZoomIn else ZoomType.ZoomOut
         val nextCells = cellsList[index]
         this.nextCells = nextCells
-        collectZoomItems(centroid = null)
+        syncScrollPosition()
         animationJob?.cancel()
         animationJob = coroutineScope.launch {
             isZooming = true
@@ -199,12 +200,13 @@ class PinchZoomGridState(
         }
     }
 
-    private fun collectZoomItems(centroid: Offset?) {
+    private fun syncScrollPosition() {
         nextItemsBounds.clear()
         animatingKeys.clear()
         isNextItemsBoundsReady = false
         animatingKeysSignal = 0
         gridState.run {
+            val centroid = zoomCentroid
             if (centroid != null) {
                 val centroidItem = layoutInfo.visibleItemsInfo.find {
                     Rect(offset = it.offset.toOffset(), size = it.size.toSize())
@@ -229,19 +231,20 @@ class PinchZoomGridState(
             )
         }
         coroutineScope.launch {
+            awaitFrame()
+
             // After the zoom type is changed, the next grid needs to sync the scroll position,
             // and item bounds need to re-calculate
             val scrollPosition = gridScrollPosition
             val nextGridState = nextGridState
             if (scrollPosition != null && nextGridState != null) {
+                nextItemsBounds.clear()
                 nextGridState.scrollToItem(
                     index = scrollPosition.firstVisibleItem,
                     scrollOffset = scrollPosition.firstItemScrollOffset,
                 )
-                nextItemsBounds.clear()
             }
 
-            awaitFrame() // Until the next grid gets composed
             // Reset the zoom after the next grid is ready
             zoom = 1f
             isNextItemsBoundsReady = true
@@ -252,6 +255,7 @@ class PinchZoomGridState(
         swapGrids(targetCells)
         isZooming = false
         zoom = 1f
+        zoomCentroid = null
         animatingKeys.clear()
         animatingKeysSignal = 0
         isNextItemsBoundsReady = false
@@ -259,17 +263,20 @@ class PinchZoomGridState(
 
     private fun swapGrids(targetCells: GridCells?) {
         fun onSwapped() {
-            isSwappingGrids = false
+            isCurrItemsVisible = true
+            forceShowNextItems = false
             nextCells = null
             gridScrollPosition = null
         }
+
         val scrollPosition = gridScrollPosition
         if (targetCells == null || scrollPosition == null) {
             // Don't swap
             onSwapped()
             return
         }
-        isSwappingGrids = true
+        forceShowNextItems = true
+        isCurrItemsVisible = false
         currentCells = targetCells
         coroutineScope.launch {
             awaitFrame() // Won't work if call scrollToItem directly
