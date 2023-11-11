@@ -55,7 +55,7 @@ PinchZoomGridLayout(state = state) { // PinchZoomGridScope
         ) {
             PhotoHeader(
                 text = "Today",
-                // Make sure the pinchItem modifier is applied to the item root
+                // Make sure the pinchItem modifier is applied to the item layout
                 // and pass the key
                 modifier = Modifier.pinchItem(key = "header")
             )
