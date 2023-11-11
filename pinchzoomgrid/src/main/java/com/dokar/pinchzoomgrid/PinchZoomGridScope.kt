@@ -58,12 +58,12 @@ internal class CurrPinchZoomGridScope(
             .onGloballyPositioned { state.itemsBounds[key] = it.bounds() }
             .onDetach { state.itemsBounds.remove(key) }
             .drawWithContent {
-                if (!state.isSwappingGrids) {
+                if (state.isCurrItemsVisible) {
                     drawContent()
                 }
             }
             .graphicsLayer {
-                if (state.isSwappingGrids || !state.isZooming || state.nextCells == null) {
+                if (!state.isCurrItemsVisible || !state.isZooming || state.nextCells == null) {
                     return@graphicsLayer
                 }
 
@@ -118,16 +118,15 @@ internal class NextPinchZoomGridScope(
         return this
             .onGloballyPositioned { state.nextItemsBounds[key] = it.bounds() }
             .drawWithContent {
-                val needToDraw = state.isSwappingGrids ||
-                        (state.isZooming &&
-                                state.animatingKeysSignal > 0 &&
-                                !state.animatingKeys.contains(key))
-                if (needToDraw) {
+                val needToDraw = state.isZooming &&
+                        state.animatingKeysSignal > 0 &&
+                        !state.animatingKeys.contains(key)
+                if (state.forceShowNextItems || needToDraw) {
                     drawContent()
                 }
             }
             .graphicsLayer {
-                if (!state.isSwappingGrids) {
+                if (state.isZooming) {
                     alpha = state.progress
                 }
             }
