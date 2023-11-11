@@ -21,7 +21,7 @@ import androidx.compose.ui.unit.toSize
  * The scope to create a [LazyVerticalGrid] or [LazyHorizontalGrid]. Both [gridState],
  * [gridCells], and [pinchItem] should be used to create the grid.
  */
-interface PinchZoomLazyGridScope {
+interface PinchZoomGridScope {
     /**
      * The lazy grid state used to pass to [LazyVerticalGrid] or [LazyHorizontalGrid].
      */
@@ -42,10 +42,10 @@ interface PinchZoomLazyGridScope {
     ): Modifier
 }
 
-internal class CurrPinchZoomLazyGridScope(
+internal class CurrPinchZoomGridScope(
     private val state: PinchZoomGridState,
     override val gridState: LazyGridState,
-) : PinchZoomLazyGridScope {
+) : PinchZoomGridScope {
     override val gridCells: GridCells get() = state.currentCells
 
     override fun Modifier.pinchItem(
@@ -106,11 +106,11 @@ internal class CurrPinchZoomLazyGridScope(
     }
 }
 
-internal class NextPinchZoomLazyGridScope(
+internal class NextPinchZoomGridScope(
     private val state: PinchZoomGridState,
     override val gridState: LazyGridState,
     override val gridCells: GridCells,
-) : PinchZoomLazyGridScope {
+) : PinchZoomGridScope {
     override fun Modifier.pinchItem(
         key: Any,
         transitions: PinchItemTransitions

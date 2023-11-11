@@ -15,20 +15,20 @@ import androidx.compose.ui.Modifier
  * A wrapper layout for [LazyVerticalGrid] and [LazyHorizontalGrid]. The following requirements
  * to make transitions work:
  *
- * - [PinchZoomLazyGridScope.gridState] should be passed in the grid.
- * - [PinchZoomLazyGridScope.gridCells] should be passed in the grid.
+ * - [PinchZoomGridScope.gridState] should be passed in the grid.
+ * - [PinchZoomGridScope.gridCells] should be passed in the grid.
  * - Item keys should be set in [LazyGridScope.item] and [LazyGridScope.items].
- * - The modifier [PinchZoomLazyGridScope.pinchItem] should be applied to the item layout(s).
+ * - The modifier [PinchZoomGridScope.pinchItem] should be applied to the item layout(s).
  * Keys passed to the modifier should be the same as the item keys.
  */
 @Composable
 fun PinchZoomGridLayout(
     state: PinchZoomGridState,
     modifier: Modifier = Modifier,
-    content: @Composable PinchZoomLazyGridScope.() -> Unit,
+    content: @Composable PinchZoomGridScope.() -> Unit,
 ) {
     val contentScope = remember(state, state.gridState) {
-        CurrPinchZoomLazyGridScope(state, state.gridState)
+        CurrPinchZoomGridScope(state, state.gridState)
     }
 
     DisposableEffect(state) {
@@ -50,7 +50,7 @@ fun PinchZoomGridLayout(
                 initialFirstVisibleItemScrollOffset = scrollPosition.firstItemScrollOffset,
             )
             val nextContentScope = remember(nextCells, nextGridState) {
-                NextPinchZoomLazyGridScope(
+                NextPinchZoomGridScope(
                     state = state,
                     gridState = nextGridState,
                     gridCells = nextCells,

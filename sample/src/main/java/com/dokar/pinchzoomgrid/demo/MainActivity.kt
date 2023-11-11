@@ -58,7 +58,7 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.dokar.pinchzoomgrid.PinchItemTransitions
 import com.dokar.pinchzoomgrid.PinchZoomGridLayout
-import com.dokar.pinchzoomgrid.PinchZoomLazyGridScope
+import com.dokar.pinchzoomgrid.PinchZoomGridScope
 import com.dokar.pinchzoomgrid.demo.ui.theme.ComposeSampleTheme
 import com.dokar.pinchzoomgrid.rememberPinchZoomGridState
 import kotlin.random.Random
@@ -171,7 +171,7 @@ fun PinchZoomGridDemo(modifier: Modifier = Modifier) {
 fun LazyGridScope.galleryItems(
     showText: Boolean,
     horizontalGrid: Boolean,
-    pinchGridScope: PinchZoomLazyGridScope,
+    pinchGridScope: PinchZoomGridScope,
 ) {
     with(pinchGridScope) {
         item(
@@ -397,7 +397,7 @@ fun PhotoHeader(
 }
 
 @Composable
-fun PinchZoomLazyGridScope.ImageItem(
+fun PinchZoomGridScope.ImageItem(
     index: Int,
     showText: Boolean,
     modifier: Modifier = Modifier,

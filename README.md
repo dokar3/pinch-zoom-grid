@@ -34,16 +34,16 @@ val cellsList = remember {
         GridCells.Fixed(2), // Zoom in to switch to this cells
     )
 }
-val state = rememberPinchZoomLazyGridState(
+val state = rememberPinchZoomGridState(
     cellsList = cellsList,
     initialCellsIndex = 1,
 )
 
-PinchZoomGridLayout(state = state) { // PinchZoomLazyGridScope
+PinchZoomGridLayout(state = state) { // PinchZoomGridScope
     LazyVerticalGrid(
-        // The gridCells is a field of the PinchZoomLazyGridScope
+        // The gridCells is a field of the PinchZoomGridScope
         columns = gridCells,
-        // The gridState is a field of the PinchZoomLazyGridScope
+        // The gridState is a field of the PinchZoomGridScope
         state = gridState,
         // Use fillMaxSize() to avoid transition clipping
         modifier = Modifier.fillMaxSize(),
