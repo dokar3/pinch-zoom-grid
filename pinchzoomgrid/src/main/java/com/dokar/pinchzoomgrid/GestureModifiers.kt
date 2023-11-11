@@ -9,25 +9,40 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.input.pointer.positionChanged
+import androidx.compose.ui.input.pointer.util.VelocityTracker
+import androidx.compose.ui.input.pointer.util.addPointerInputChange
 import androidx.compose.ui.util.fastAny
+import androidx.compose.ui.util.fastFirstOrNull
 import androidx.compose.ui.util.fastForEach
 import kotlin.math.abs
 
 internal fun Modifier.handlePinchGesture(state: PinchZoomGridState): Modifier {
     return this.pointerInput(state) {
         // Based on detectTransformGestures()
+        val velocityTracker = VelocityTracker()
         awaitEachGesture {
             var zoom = 1f
             var pastTouchSlop = false
             val touchSlop = viewConfiguration.touchSlop / 4
 
-            awaitFirstDown(requireUnconsumed = false)
+            val down = awaitFirstDown(requireUnconsumed = false)
+
+            velocityTracker.resetTracking()
+            velocityTracker.addPointerInputChange(down)
+            var trackId = down.id
 
             var pinchStarted = false
 
             do {
                 val event = awaitPointerEvent()
                 val canceled = event.changes.fastAny { it.isConsumed }
+
+                val trackChange = event.changes.fastFirstOrNull { it.id == trackId }
+                    ?: event.changes.firstOrNull()?.also { trackId = it.id }
+                if (trackChange != null) {
+                    velocityTracker.addPointerInputChange(trackChange)
+                }
+
                 if (!canceled) {
                     val zoomChange = event.calculateZoom()
 
@@ -59,7 +74,7 @@ internal fun Modifier.handlePinchGesture(state: PinchZoomGridState): Modifier {
                 }
             } while (!canceled && event.changes.fastAny { it.pressed })
             if (pinchStarted) {
-                state.onZoomStopped()
+                state.onZoomStopped(velocityTracker.calculateVelocity())
             }
         }
     }
