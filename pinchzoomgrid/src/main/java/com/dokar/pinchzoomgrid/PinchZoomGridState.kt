@@ -4,6 +4,7 @@ import androidx.compose.animation.core.AnimationSpec
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animate
 import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyGridState
@@ -19,6 +20,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.unit.Velocity
 import androidx.compose.ui.unit.toOffset
 import androidx.compose.ui.unit.toSize
 import kotlinx.coroutines.CoroutineScope
@@ -26,6 +28,8 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.android.awaitFrame
 import kotlinx.coroutines.job
 import kotlinx.coroutines.launch
+import kotlin.math.abs
+import kotlin.math.max
 
 /**
  * Create and remember a [PinchZoomGridState].
@@ -35,7 +39,7 @@ fun rememberPinchZoomGridState(
     cellsList: List<GridCells>,
     initialCellsIndex: Int,
     gridState: LazyGridState = rememberLazyGridState(),
-    animationSpec: AnimationSpec<Float> = defaultSpringSpec,
+    animationSpec: AnimationSpec<Float> = defaultAnimationSpec,
 ): PinchZoomGridState {
     val coroutineScope = rememberCoroutineScope()
     return remember(coroutineScope, cellsList, initialCellsIndex, gridState) {
@@ -139,10 +143,22 @@ class PinchZoomGridState(
         this.zoom = newZoom
     }
 
-    internal fun onZoomStopped() = coroutineScope.launch {
+    internal fun onZoomStopped(velocity: Velocity) = coroutineScope.launch {
         val next = nextCells
         val job = coroutineContext.job
         animationJob = job
+        val maxVelocity = max(abs(velocity.x), abs(velocity.y))
+        val animationSpec = if (animationSpec == defaultAnimationSpec) {
+            if (maxVelocity > 1500f) {
+                fastAnimationSpec
+            } else if (maxVelocity < 500f) {
+                slowAnimationSpec
+            } else {
+                defaultAnimationSpec
+            }
+        } else {
+            animationSpec
+        }
         if (progress > 0.5f && next != null) {
             job.invokeOnCompletion { onZoomAnimationEnd(next) }
             val targetValue = if (zoomType == ZoomType.ZoomIn) {
@@ -330,7 +346,14 @@ internal data class GridScrollPosition(
     val firstItemScrollOffset: Int,
 )
 
-private val defaultSpringSpec = spring<Float>(
+private val slowAnimationSpec = spring<Float>(
+    dampingRatio = Spring.DampingRatioLowBouncy,
+    stiffness = Spring.StiffnessLow,
+)
+
+private val defaultAnimationSpec = spring<Float>(
     dampingRatio = Spring.DampingRatioLowBouncy + 0.15f,
     stiffness = Spring.StiffnessLow + 50f,
 )
+
+private val fastAnimationSpec = tween<Float>(durationMillis = 225)
