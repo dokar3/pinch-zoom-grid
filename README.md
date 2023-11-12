@@ -13,7 +13,7 @@ cells using pinch gestures and animations.
 
 | Vertical                                                     | Horizontal                                                   | Invoke                                                       |
 | ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ |
-| <video src="https://github.com/dokar3/pinch-zoom-grid/assets/68095777/fd7a2ed1-96d5-44e1-aa85-0ca47a87d04a"/> | <video src="https://github.com/dokar3/pinch-zoom-grid/assets/68095777/561b49f9-bdf9-4649-92cc-f9694c626d90"/> | <video src="https://github.com/dokar3/pinch-zoom-grid/assets/68095777/95816c47-4e34-4172-9f61-9e829813b340"/> |
+| <video src="https://github.com/dokar3/pinch-zoom-grid/assets/68095777/c887f62f-a107-400d-a33e-0f1fc21bdd2f"/> | <video src="https://github.com/dokar3/pinch-zoom-grid/assets/68095777/246c34d4-0642-4f90-a906-8b995b54e6ba"/> | <video src="https://github.com/dokar3/pinch-zoom-grid/assets/68095777/be1cdd86-8550-4add-8b31-cb3101390c2e"/> |
 
 
 # Usages
