@@ -74,7 +74,7 @@ PinchZoomGridLayout(state = state) { // PinchZoomGridScope
 }
 ```
 
-### Transitions
+### Item transitions
 
 It automatically works with non-fixed size layouts, for example:
 
@@ -112,6 +112,24 @@ If you have some layouts have fixed size in the item, such as `Text()`, scale tr
     )
 }
 ```
+
+### Offscreen item transitions
+
+It's also possible to customize offscreen item transitions. The default value is `Alpha` + `Translate`.
+
+```kotlin
+AsyncImage(
+    model = url,
+    contentDescription = null,
+    modifier = Modifier
+        // Enable all transitions
+        .pinchItem(key = index, offscreenTransitions = PinchItemTransitions.Translate)
+        .fillMaxWidth()
+        .aspectRatio(1f)
+        .background(placeholder),
+)
+```
+
 
 # License
 ```
