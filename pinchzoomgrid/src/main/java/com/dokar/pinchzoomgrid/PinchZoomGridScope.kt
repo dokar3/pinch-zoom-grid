@@ -1,5 +1,6 @@
 package com.dokar.pinchzoomgrid
 
+import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyGridScope
 import androidx.compose.foundation.lazy.grid.LazyGridState
@@ -8,6 +9,7 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.graphics.GraphicsLayerScope
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.LayoutCoordinates
@@ -16,6 +18,10 @@ import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.node.ModifierNodeElement
 import androidx.compose.ui.platform.InspectorInfo
 import androidx.compose.ui.unit.toSize
+import com.dokar.pinchzoomgrid.PinchItemTransitions.Companion.All
+import com.dokar.pinchzoomgrid.PinchItemTransitions.Companion.Alpha
+import com.dokar.pinchzoomgrid.PinchItemTransitions.Companion.Scale
+import com.dokar.pinchzoomgrid.PinchItemTransitions.Companion.Translate
 
 /**
  * The scope to create a [LazyVerticalGrid] or [LazyHorizontalGrid]. Both [gridState],
@@ -38,7 +44,8 @@ interface PinchZoomGridScope {
      */
     fun Modifier.pinchItem(
         key: Any,
-        transitions: PinchItemTransitions = PinchItemTransitions.All,
+        transitions: PinchItemTransitions = All,
+        offscreenTransitions: PinchItemTransitions = Alpha + Translate,
     ): Modifier
 }
 
@@ -50,10 +57,14 @@ internal class CurrPinchZoomGridScope(
 
     override fun Modifier.pinchItem(
         key: Any,
-        transitions: PinchItemTransitions
+        transitions: PinchItemTransitions,
+        offscreenTransitions: PinchItemTransitions,
     ): Modifier {
-        val shouldScale = transitions.has(PinchItemTransitions.Scale)
-        val shouldTranslate = transitions.has(PinchItemTransitions.Translate)
+        val hasScale = transitions.has(Scale)
+        val hasTranslate = transitions.has(Translate)
+        val offscreenHashAlpha = offscreenTransitions.has(Alpha)
+        val offscreenHasScale = offscreenTransitions.has(Scale)
+        val offscreenHashTranslate = offscreenTransitions.has(Translate)
         return this
             .onGloballyPositioned { state.itemsBounds[key] = it.bounds() }
             .onDetach { state.itemsBounds.remove(key) }
@@ -72,37 +83,103 @@ internal class CurrPinchZoomGridScope(
                 val nextBounds = state.nextItemsBounds[key]
                 if (nextBounds == null) {
                     if (state.isNextItemsBoundsReady) {
-                        // Items are not in the next cells now
-                        alpha = 1f - progress
+                        offscreenItemTransitions(
+                            hasAlpha = offscreenHashAlpha,
+                            hasScale = offscreenHasScale,
+                            hasTranslate = offscreenHashTranslate,
+                            progress = progress,
+                            currBounds = currBounds,
+                        )
                     }
                     return@graphicsLayer
                 }
 
-                if (currBounds != null && (shouldScale || shouldTranslate)) {
+                sharedItemTransitions(
+                    hasScale = hasScale,
+                    hasTranslate = hasTranslate,
+                    progress = progress,
+                    nextBounds = nextBounds,
+                    currBounds = currBounds,
+                )
+
+                if (currBounds != null && (hasScale || hasTranslate)) {
                     if (!state.animatingKeys.contains(key)) {
                         // Notify the next grid renders non-animating items
                         state.animatingKeys.add(key)
                         state.animatingKeysSignal++
                     }
                 }
+            }
+    }
 
-                if (shouldScale) {
-                    // Scale
-                    transformOrigin = TransformOrigin(0f, 0f)
-                    val targetScaleX = nextBounds.size.width / size.width
-                    val targetScaleY = nextBounds.size.height / size.height
-                    scaleX = 1f + (targetScaleX - 1f) * progress
-                    scaleY = 1f + (targetScaleY - 1f) * progress
+    private fun GraphicsLayerScope.offscreenItemTransitions(
+        hasAlpha: Boolean,
+        hasScale: Boolean,
+        hasTranslate: Boolean,
+        progress: Float,
+        currBounds: Rect?,
+    ) {
+        val value = 1f - progress
+
+        if (hasAlpha) {
+            alpha = value
+        }
+
+        if (hasScale) {
+            scaleX = value
+            scaleY = value
+        }
+
+        val zoomCentroid = state.zoomCentroid
+        if (hasTranslate &&
+            currBounds != null &&
+            zoomCentroid != null
+        ) {
+            val gridLayoutInfo = state.gridState.layoutInfo
+            val isHorizontal = gridLayoutInfo.orientation == Orientation.Horizontal
+            val gridWidth = gridLayoutInfo.viewportSize.width
+            val gridHeight = gridLayoutInfo.viewportSize.height
+            if (isHorizontal) {
+                translationX = if (currBounds.right <= zoomCentroid.x) {
+                    // Move to left
+                    -currBounds.right * progress
+                } else {
+                    // Move to right
+                    (gridWidth - currBounds.left) * progress
                 }
-
-                if (shouldTranslate && currBounds != null) {
-                    // Translate
-                    val targetTranX = nextBounds.left - currBounds.left
-                    val targetTranY = nextBounds.top - currBounds.top
-                    translationX = targetTranX * progress
-                    translationY = targetTranY * progress
+            } else {
+                translationY = if (currBounds.bottom <= zoomCentroid.y) {
+                    // Move to top
+                    -currBounds.bottom * progress
+                } else {
+                    // Move to bottom
+                    (gridHeight - currBounds.top) * progress
                 }
             }
+        }
+    }
+
+    private fun GraphicsLayerScope.sharedItemTransitions(
+        hasScale: Boolean,
+        hasTranslate: Boolean,
+        progress: Float,
+        nextBounds: Rect,
+        currBounds: Rect?,
+    ) {
+        if (hasScale) {
+            transformOrigin = TransformOrigin(0f, 0f)
+            val targetScaleX = nextBounds.size.width / size.width
+            val targetScaleY = nextBounds.size.height / size.height
+            scaleX = 1f + (targetScaleX - 1f) * progress
+            scaleY = 1f + (targetScaleY - 1f) * progress
+        }
+
+        if (hasTranslate && currBounds != null) {
+            val targetTranX = nextBounds.left - currBounds.left
+            val targetTranY = nextBounds.top - currBounds.top
+            translationX = targetTranX * progress
+            translationY = targetTranY * progress
+        }
     }
 }
 
@@ -113,23 +190,83 @@ internal class NextPinchZoomGridScope(
 ) : PinchZoomGridScope {
     override fun Modifier.pinchItem(
         key: Any,
-        transitions: PinchItemTransitions
+        transitions: PinchItemTransitions,
+        offscreenTransitions: PinchItemTransitions,
     ): Modifier {
+        val offscreenHashAlpha = offscreenTransitions.has(Alpha)
+        val offscreenHasScale = offscreenTransitions.has(Scale)
+        val offscreenHashTranslate = offscreenTransitions.has(Translate)
         return this
             .onGloballyPositioned { state.nextItemsBounds[key] = it.bounds() }
             .drawWithContent {
-                val needToDraw = state.isZooming &&
-                        state.animatingKeysSignal > 0 &&
-                        !state.animatingKeys.contains(key)
-                if (state.forceShowNextItems || needToDraw) {
+                if (state.forceShowNextItems || needToDraw(key)) {
                     drawContent()
                 }
             }
             .graphicsLayer {
-                if (state.isZooming) {
-                    alpha = state.progress
+                if (!state.isZooming) {
+                    return@graphicsLayer
+                }
+                offscreenItemTransitions(
+                    hasAlpha = offscreenHashAlpha,
+                    hasScale = offscreenHasScale,
+                    hasTranslate = offscreenHashTranslate,
+                    progress = state.progress,
+                    bounds = state.nextItemsBounds[key],
+                )
+            }
+    }
+
+    private fun needToDraw(key: Any): Boolean {
+        return state.isZooming &&
+                state.animatingKeysSignal > 0 &&
+                !state.animatingKeys.contains(key)
+    }
+
+    private fun GraphicsLayerScope.offscreenItemTransitions(
+        hasAlpha: Boolean,
+        hasScale: Boolean,
+        hasTranslate: Boolean,
+        progress: Float,
+        bounds: Rect?,
+    ) {
+        if (hasAlpha) {
+            alpha = progress
+        }
+
+        if (hasScale) {
+            scaleX = progress
+            scaleY = progress
+        }
+
+        val zoomCentroid = state.zoomCentroid
+        if (hasTranslate &&
+            bounds != null &&
+            zoomCentroid != null
+        ) {
+            val gridLayoutInfo = state.gridState.layoutInfo
+            val isHorizontal = gridLayoutInfo.orientation == Orientation.Horizontal
+            val gridWidth = gridLayoutInfo.viewportSize.width
+            val gridHeight = gridLayoutInfo.viewportSize.height
+            val reversedProgress = 1f - progress
+            if (isHorizontal) {
+                translationX = if (bounds.right <= zoomCentroid.x) {
+                    // Move from left
+                    -bounds.right * reversedProgress
+                } else {
+                    // Move from right
+                    (gridWidth - bounds.left) * reversedProgress
+                }
+            } else {
+                translationY = if (bounds.bottom <= zoomCentroid.y) {
+                    // Move from top
+                    -bounds.bottom * reversedProgress
+                } else {
+                    // Move from bottom
+                    (gridHeight - bounds.top) * reversedProgress
                 }
             }
+        }
     }
 }
 

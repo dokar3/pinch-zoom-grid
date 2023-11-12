@@ -20,9 +20,29 @@ value class PinchItemTransitions private constructor(private val value: Int) {
     }
 
     companion object {
+        /**
+         * No transitions.
+         */
         val None = PinchItemTransitions(0)
-        val Scale = PinchItemTransitions(1 shl 0)
-        val Translate = PinchItemTransitions(1 shl 1)
-        val All = Scale + Translate
+
+        /**
+         * Alpha transition for offscreen items. Has no effect on shared items now.
+         */
+        val Alpha = PinchItemTransitions(1 shl 0)
+
+        /**
+         * Scale transition includes both x axis and y axis.
+         */
+        val Scale = PinchItemTransitions(1 shl 1)
+
+        /**
+         * Translation transition includes both x axis and y axis.
+         */
+        val Translate = PinchItemTransitions(1 shl 2)
+
+        /**
+         * All available transitions.
+         */
+        val All = Alpha + Scale + Translate
     }
 }
