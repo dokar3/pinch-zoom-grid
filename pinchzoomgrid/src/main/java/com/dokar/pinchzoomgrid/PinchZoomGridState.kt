@@ -89,7 +89,8 @@ class PinchZoomGridState(
     internal var zoomType = ZoomType.ZoomIn
         private set
 
-    private var zoomCentroid: Offset? = null
+    internal var zoomCentroid: Offset? = null
+        private set
 
     // Animation value
     internal val progress
