@@ -79,11 +79,14 @@ PinchZoomGridLayout(state = state) { // PinchZoomGridScope
 It automatically works with non-fixed size layouts, for example:
 
 ```kotlin
-Box(
+AsyncImage(
+    model = url,
+    contentDescription = null,
     modifier = Modifier
         .pinchItem(key = index)
         .fillMaxWidth()
         .aspectRatio(1f)
+        .background(placeholder),
 )
 ```
 
@@ -122,7 +125,6 @@ AsyncImage(
     model = url,
     contentDescription = null,
     modifier = Modifier
-        // Enable all transitions
         .pinchItem(key = index, offscreenTransitions = PinchItemTransitions.Translate)
         .fillMaxWidth()
         .aspectRatio(1f)
