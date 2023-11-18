@@ -11,8 +11,8 @@ cells using pinch gestures and animations.
 
 ### Demo
 
-| Vertical                                                     | Horizontal                                                   | Invoke                                                       |
-| ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ |
+| Vertical                                                                                                      | Horizontal                                                                                                    | Invoke                                                                                                        |
+|---------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------|
 | <video src="https://github.com/dokar3/pinch-zoom-grid/assets/68095777/c887f62f-a107-400d-a33e-0f1fc21bdd2f"/> | <video src="https://github.com/dokar3/pinch-zoom-grid/assets/68095777/246c34d4-0642-4f90-a906-8b995b54e6ba"/> | <video src="https://github.com/dokar3/pinch-zoom-grid/assets/68095777/be1cdd86-8550-4add-8b31-cb3101390c2e"/> |
 
 
@@ -29,9 +29,9 @@ implementation("io.github.dokar3:pinchzoomgrid:LATEST_VERSION")
 ```kotlin
 val cellsList = remember {
     listOf(
-        GridCells.Fixed(4), // Zoom out to switch to this cells
-        GridCells.Fixed(3),
-        GridCells.Fixed(2), // Zoom in to switch to this cells
+        GridCells.Fixed(4), // ↑ Zoom out
+        GridCells.Fixed(3), // |
+        GridCells.Fixed(2), // ↓ Zoom in
     )
 }
 val state = rememberPinchZoomGridState(
@@ -41,32 +41,25 @@ val state = rememberPinchZoomGridState(
 
 PinchZoomGridLayout(state = state) { // PinchZoomGridScope
     LazyVerticalGrid(
-        // The gridCells is a field of the PinchZoomGridScope
+        // Use gridCells from the PinchZoomGridScope
         columns = gridCells,
-        // The gridState is a field of the PinchZoomGridScope
+        // Use gridState from the PinchZoomGridScope
         state = gridState,
         // Use fillMaxSize() to avoid transition clipping
         modifier = Modifier.fillMaxSize(),
     ) {
-        item(
-            // key is required
-            key = "header",
-            span = { GridItemSpan(maxLineSpan) },
-        ) {
+        item(span = { GridItemSpan(maxLineSpan) }) {
             PhotoHeader(
                 text = "Today",
-                // Make sure the pinchItem modifier is applied to the item layout
-                // and pass the key
+                // Apply to layouts that require transitions
                 modifier = Modifier.pinchItem(key = "header")
             )
         }
 
-        items(
-            count = 10,
-            key = { index -> index }
-        ) { index ->
+        items(count = 10) { index ->
             ImageItem(
                 index = it,
+                // Make sure keys are unique
                 modifier = Modifier.pinchItem(key = index),
             )
         }
