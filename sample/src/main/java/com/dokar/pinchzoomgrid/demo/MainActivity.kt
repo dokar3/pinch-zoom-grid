@@ -174,10 +174,7 @@ fun LazyGridScope.galleryItems(
     pinchGridScope: PinchZoomGridScope,
 ) {
     with(pinchGridScope) {
-        item(
-            key = "header1",
-            span = { GridItemSpan(maxLineSpan) },
-        ) {
+        item(span = { GridItemSpan(maxLineSpan) }) {
             PhotoHeader(
                 text = "Today",
                 verticalText = horizontalGrid,
@@ -185,7 +182,7 @@ fun LazyGridScope.galleryItems(
             )
         }
 
-        items(count = 5, key = { index -> index }) {
+        items(count = 5) {
             ImageItem(
                 index = it,
                 showText = showText,
@@ -193,10 +190,7 @@ fun LazyGridScope.galleryItems(
             )
         }
 
-        item(
-            key = "header2",
-            span = { GridItemSpan(maxLineSpan) },
-        ) {
+        item(span = { GridItemSpan(maxLineSpan) }) {
             PhotoHeader(
                 text = "Last week",
                 verticalText = horizontalGrid,
@@ -204,7 +198,7 @@ fun LazyGridScope.galleryItems(
             )
         }
 
-        items(count = 25, key = { index -> index + 5 }) {
+        items(count = 25) {
             ImageItem(
                 index = it + 5,
                 showText = showText,
@@ -212,10 +206,7 @@ fun LazyGridScope.galleryItems(
             )
         }
 
-        item(
-            key = "header3",
-            span = { GridItemSpan(maxLineSpan) },
-        ) {
+        item(span = { GridItemSpan(maxLineSpan) }) {
             PhotoHeader(
                 text = "Last month",
                 verticalText = horizontalGrid,
@@ -223,7 +214,7 @@ fun LazyGridScope.galleryItems(
             )
         }
 
-        items(count = 45, key = { index -> index + 30 }) {
+        items(count = 45) {
             ImageItem(
                 index = it + 30,
                 showText = showText,
