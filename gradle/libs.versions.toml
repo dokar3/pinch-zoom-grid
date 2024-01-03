@@ -1,5 +1,5 @@
 [versions]
-agp = "8.2.0"
+agp = "8.2.1"
 coil-compose = "2.5.0"
 kotlin = "1.9.20"
 core-ktx = "1.12.0"
