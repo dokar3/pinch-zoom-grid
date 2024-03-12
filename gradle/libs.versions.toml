@@ -10,7 +10,7 @@ lifecycle-runtime-ktx = "2.7.0"
 activity-compose = "1.8.2"
 compose-bom = "2024.02.02"
 compose-compiler = "1.5.8"
-maven-publish = "0.27.0"
+maven-publish = "0.28.0"
 
 [libraries]
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coil-compose" }
